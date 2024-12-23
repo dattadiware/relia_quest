@@ -1,2 +1,35 @@
-spring.application.name: employee-api
-server.port: 8111
+spring:
+  application:
+    name: employee-api
+
+server:
+  port: 8080
+
+employee:
+  base-url: http://localhost:8112/api/v1
+  resource-url: /employee
+
+resilience4j:
+  retry:
+    instances:
+      employeeService:
+        maxAttempts: 3
+        waitDuration: 2s
+        ignoreExceptions:
+          - com.reliaquest.api.exception.EmployeeNotFoundException
+  circuitbreaker:
+    instances:
+      employeeService:
+        slidingWindowSize: 20
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 5
+  bulkhead:
+    instances:
+      employeeService:
+        maxConcurrentCalls: 10
+        maxWaitDuration: 0
+  timelimiter:
+    instances:
+      employeeService:
+        timeoutDuration: 10s
